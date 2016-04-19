@@ -54,9 +54,9 @@
 <script type="text/javascript" src="d3/d3.js"></script>
 <script>
 
-var diameter = 700,
+var diameter = 500,
     radius = diameter / 2,
-    innerRadius = radius - 120;
+    innerRadius = radius;
 
 var cluster = d3.layout.cluster()
     .size([360, innerRadius])
@@ -301,9 +301,9 @@ function getDate (sliderNumber){
 
 console.log(getDate(242));
 
-var diameter2 = 700,
+var diameter2 = 500,
         radius2 = diameter2 / 2,
-        innerRadius2 = radius2 - 120;
+        innerRadius2 = radius2;
 
 var cluster2 = d3.layout.cluster()
         .size([360, innerRadius2])
@@ -326,16 +326,16 @@ var svg2 = d3.select("#chart2").append("svg")
 var link2 = svg2.append("g").selectAll(".link"),
         node2 = svg2.append("g").selectAll(".node");
 
-d3.json("2015.json", function(error, dat) {
-  if (error) throw error;
-  console.log(dat['20150101']); //accessing using key
-})
+//d3.json("2015.json", function(error, dat) {
+//  if (error) throw error;
+//  console.log(dat['20150101']); //accessing using key
+//})
 
 //***************************************************************************************************************
 //*****************************************      Slider      ****************************************************
 //***************************************************************************************************************
 
-var width = 520,
+var width = 500,
     height = 100;
 
 var x = d3.scale.linear()
@@ -398,7 +398,6 @@ function brushed() {
     }
 
     handle.attr("cx", x(value));
-    console.log(value);
     //d3.select("body").style("background-color", d3.hsl(value, .8, .8));
 }
 
