@@ -16,12 +16,45 @@
   stroke-opacity: 1;
 }
 
+.axis {
+    font: 10px sans-serif;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
+}
+
+.axis .domain {
+    fill: none;
+    stroke: #000;
+    stroke-opacity: .3;
+    stroke-width: 10px;
+    stroke-linecap: round;
+}
+
+.axis .halo {
+    fill: none;
+    stroke: #ddd;
+    stroke-width: 8px;
+    stroke-linecap: round;
+}
+
+.slider .handle {
+    fill: #fff;
+    stroke: #000;
+    stroke-opacity: .5;
+    stroke-width: 1.25px;
+    cursor: crosshair;
+}
+
 </style>
 <body>
+<div id="chart"></div>
+<div id="chart2"></div>
+<div id="slider"></div>
 <script type="text/javascript" src="d3/d3.js"></script>
 <script>
 
-var diameter = 960,
+var diameter = 700,
     radius = diameter / 2,
     innerRadius = radius - 120;
 
@@ -37,7 +70,7 @@ var line = d3.svg.line.radial()
     .radius(function(d) { return d.y; })
     .angle(function(d) { return d.x / 180 * Math.PI; });
 
-var svg = d3.select("body").append("svg")
+var svg = d3.select("#chart").append("svg")
     .attr("width", diameter)
     .attr("height", diameter)
   .append("g")
@@ -209,5 +242,166 @@ function packageImports(nodes) {
 
   return imports;
 }
+
+//***************************************************************************************************************
+//*****************************************  Timeline Chart  ****************************************************
+//***************************************************************************************************************
+
+
+function getDate (sliderNumber){
+    if (sliderNumber > 334) {
+        if (sliderNumber - 334 < 10) return '2015120' + (sliderNumber - 334);
+        return '201512' + (sliderNumber) - 334;
+    }
+    else if (sliderNumber > 304) {
+        if (sliderNumber - 31 < 304) return '2015110' + (sliderNumber - 304);
+        return '201511' + (sliderNumber - 303);
+    }
+    else if (sliderNumber > 273) {
+        if (sliderNumber - 31 < 273) return '2015100' + (sliderNumber - 273);
+        return '201510' + (sliderNumber - 273);
+    }
+    else if (sliderNumber > 243) {
+        if (sliderNumber - 243 < 10) return '2015090' + (sliderNumber - 243);
+        return '201509' + (sliderNumber - 243);
+    }
+    else if (sliderNumber > 212) {
+        if (sliderNumber - 212 < 10) return '2015080' + (sliderNumber - 212);
+        return '201508' + (sliderNumber - 212);
+    }
+    else if (sliderNumber > 181) {
+        if (sliderNumber - 181 < 10) return '2015070' + (sliderNumber - 181);
+        return '201507' + (sliderNumber - 181);
+    }
+    else if (sliderNumber > 151) {
+        if (sliderNumber - 151 < 10) return '2015060' + (sliderNumber - 151);
+        return '201506' + (sliderNumber - 151);
+    }
+    else if (sliderNumber > 120) {
+        if (sliderNumber - 120 < 10) return '2015050' + (sliderNumber - 120);
+        return '201505' + (sliderNumber - 120);
+    }
+    else if (sliderNumber > 90) {
+        if (sliderNumber - 90 < 10) return '2015040' + (sliderNumber - 90);
+        return '201504' + (sliderNumber - 90);
+    }
+    else if (sliderNumber > 59) {
+        if (sliderNumber - 59 < 10) return '2015030' + (sliderNumber - 59);
+        return '201503' + (sliderNumber - 59);
+    }
+    else if (sliderNumber > 31) {
+        if (sliderNumber - 31 < 10) return '2015020' + (sliderNumber - 31);
+        return '201502' + (sliderNumber - 31);
+    }
+    else {
+        if (sliderNumber < 10) return '2015010' + (sliderNumber);
+        return '201501' + sliderNumber;
+    }
+}
+
+console.log(getDate(242));
+
+var diameter2 = 700,
+        radius2 = diameter2 / 2,
+        innerRadius2 = radius2 - 120;
+
+var cluster2 = d3.layout.cluster()
+        .size([360, innerRadius2])
+        .sort(null)
+
+var bundle2 = d3.layout.bundle();
+
+var line2 = d3.svg.line.radial()
+        .interpolate("bundle")
+        .tension(.85)
+        .radius(function(d) { return d.y; })
+        .angle(function(d) { return d.x / 180 * Math.PI; });
+
+var svg2 = d3.select("#chart2").append("svg")
+        .attr("width", diameter2)
+        .attr("height", diameter2)
+        .append("g")
+        .attr("transform", "translate(" + radius2 + "," + radius2 + ")");
+
+var link2 = svg2.append("g").selectAll(".link"),
+        node2 = svg2.append("g").selectAll(".node");
+
+d3.json("2015.json", function(error, dat) {
+  if (error) throw error;
+  console.log(dat['20150101']); //accessing using key
+})
+
+//***************************************************************************************************************
+//*****************************************      Slider      ****************************************************
+//***************************************************************************************************************
+
+var width = 520,
+    height = 100;
+
+var x = d3.scale.linear()
+        .domain([0, 365])
+        .range([0, width-20])
+        .clamp(true);
+
+var brush = d3.svg.brush()
+        .x(x)
+        .extent([0, 0])
+        .on("brush", brushed);
+
+var svg = d3.select('#slider').append("svg")
+        .attr("width", width)
+        .attr("height", height)
+        .append("g")
+        .attr("transform", "translate(" + 10 + "," + 0 + ")");
+
+svg.append("g")
+    .attr("class", "x axis")
+    .attr("transform", "translate(0," + height / 2 + ")")
+    .call(d3.svg.axis()
+            .scale(x)
+            .orient("bottom")
+            .tickFormat(function(d) { return d })
+            .tickSize(0)
+            .tickPadding(12))
+    .select(".domain")
+    .select(function() { return this.parentNode.appendChild(this.cloneNode(true)); })
+    .attr("class", "halo");
+
+var slider = svg.append("g")
+    .attr("class", "slider")
+    .call(brush);
+
+slider.selectAll(".extent,.resize")
+    .remove();
+
+slider.select(".background")
+    .attr("height", height);
+
+var handle = slider.append("circle")
+    .attr("class", "handle")
+    .attr("transform", "translate(0," + height / 2 + ")")
+    .attr("r", 9);
+
+slider
+    .call(brush.event)
+    .transition() // gratuitous intro!
+    .duration(750)
+    .call(brush.extent([70, 70]))
+    .call(brush.event);
+
+function brushed() {
+    var value = brush.extent()[0];
+
+    if (d3.event.sourceEvent) { // not a programmatic event
+        value = Math.round(x.invert(d3.mouse(this)[0]));
+        brush.extent([value, value]);
+    }
+
+    handle.attr("cx", x(value));
+    console.log(value);
+    //d3.select("body").style("background-color", d3.hsl(value, .8, .8));
+}
+
+
 
 </script>
