@@ -367,9 +367,10 @@ function drawTimelinePlot(key){
                     return urlList[i];
                 })
                 .style('fill', 'black')
-                .attr("xlink:href", function(d, i){
+                .attr("href", function(d, i){
                     return urlList[i]
                 })
+
 
         var nodes2 = cluster2.nodes(packageHierarchy2(data3)),
         links2 = packageImports2(nodes2);
