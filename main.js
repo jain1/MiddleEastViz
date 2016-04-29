@@ -72,13 +72,13 @@ d3.json("alldays2.json", function(error, classes) {
         .data(bundle(links))
         .enter().append("path")
         .each(function(d) {
-            d.source = d[0], d.target = d[d.length - 2], d.values = d[d.length-1];
+            d.source = d[0], d.target = d[d.length - 1];
         })
         .attr("stroke-opacity", ".4")
         .attr("class", "link")
         .attr("stroke", function(d, i){
-            if (colorFlag[i] == 1) return "blue";
-            return "red";
+            if (colorFlag[i] == 1) return "#304FFE";
+            return "#FF1744";
         })
         .attr("d", line)
         .attr('stroke-width', function(d, i){
@@ -99,7 +99,7 @@ d3.json("alldays2.json", function(error, classes) {
         .attr("transform", function(d) { return "rotate(" + (d.x - 90) + ")translate(" + (d.y + 8) + ",0)" + (d.x < 180 ? "" : "rotate(180)"); })
         .style("text-anchor", function(d) { return d.x < 180 ? "start" : "end"; })
         .text(function(d) {
-            return d.key;
+            return d.name;
         })
         .on("mouseover", mouseovered)
         .on("mouseout", mouseouted);
@@ -117,7 +117,7 @@ d3.json("alldays2.json", function(error, classes) {
         })
         .attr("transform", function(d) { return "rotate(" + (d.x - 90) + ")translate(" + (d.y + 8) + ",0)" + (d.x < 180 ? "" : "rotate(180)"); })
         .style("text-anchor", function(d) { return d.x < 180 ? "start" : "end"; })
-        .text(function(d) { return d.key; })
+        .text(function(d) { return d.name; })
         //.on("mouseover", mouseovered)
         //.on("mouseout", mouseouted);
 });
@@ -133,17 +133,9 @@ function generateTimelineGraph(key) {
 
     d3.json("timeline2.json", function(error, dat) {
         if (error) throw error;
-        //console.log(dat['20150108']); //accessing using key
-        //console.log(data3);
-
-        //var key = '20150802'
-        //console.log("the key received is: " + key)
-
-        //generateTimelineData(dat,key);
-        //console.log("our list of urls");
-        //console.log(urlList);
-
         svgTimelineChart.selectAll('.link').remove();
+
+        console.log("generating links");
 
         var nodesTimeline = clusterTimeline.nodes(packageHierarchy(generateTimelineData(dat,key)));
         var linksTimeline = packageImports(nodesTimeline);
@@ -154,19 +146,21 @@ function generateTimelineGraph(key) {
             .data(bundle(linksTimeline))
             .enter().append("path")
             .each(function(d) {
-                d.source = d[0], d.target = d[d.length - 2], d.values = d[d.length-1];
+                d.source = d[0], d.target = d[d.length - 1];
             })
             .attr("stroke-opacity", ".4")
             .attr("class", "link")
             .attr("stroke", function(d, i){
-                if (colorFlag2[i] > 0) return "blue";
-                return "red";
+                if (colorFlag2[i] > 0) return "#304FFE";
+                return "#FF1744";
             })
             .attr("d", lineTimeline)
             .attr('stroke-width', function(d, i){
                 return '2px';
             });
 
+        //console.log("This is our data3")
+        //console.log(data3);
         generateURL();
 
 
@@ -312,3 +306,59 @@ function generateURL(){
             return participants[i] + ': ' + titleList[i];
         });
 }
+
+//***************************************************************************************************************
+//*****************************************      Legend      ****************************************************
+//***************************************************************************************************************
+
+var legend = d3.select("#legend").append("svg")
+    .attr("width", 1200)
+    .attr("height", 20)
+
+
+var legend1 = legend.append('g')
+    .attr('transform', 'translate(200,0)')
+
+legend1
+    .append("rect")
+    .attr("x", 200)
+    .attr("y", 0)
+    .attr("height", 20)
+    .attr("width", 200)
+    .style("fill", "#FF1744")
+    .style('opacity', 0.3)
+
+legend1
+    .append('text')
+    .attr("x", 300)
+    .attr("y", 14)
+    .style("fill", "white")
+    .style("font-size", "12px")
+    //.attr("dy", ".35em")
+    .attr("text-anchor", "middle")
+    .style("pointer-events", "none")
+    .text("negative relationships");
+
+var legend2 = legend.append('g')
+    .attr('transform', 'translate(200,0)')
+
+legend2
+    .append("rect")
+    .attr("x", 400)
+    .attr("y", 0)
+    .attr("height", 20)
+    .attr("width", 200)
+    .style("fill", "#304FFE")
+    .style('opacity', 0.3)
+
+
+legend2
+    .append('text')
+    .attr("x", 500)
+    .attr("y", 14)
+    .style("fill", "white")
+    .style("font-size", "12px")
+    //.attr("dy", ".35em")
+    .attr("text-anchor", "middle")
+    .style("pointer-events", "none")
+    .text("positive relationships");
