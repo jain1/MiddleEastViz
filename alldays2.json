@@ -1,7 +1,7 @@
 [
     {
         "name": "SYRIA",
-        "eventcounts": [
+        "eventCount": [
             845,
             304,
             488,
@@ -31,7 +31,7 @@
             3,
             5
         ],
-        "neighbs": [
+        "imports": [
             "RUSSIA",
             "ISIS",
             "TURKEY",
@@ -40,7 +40,7 @@
             "IRAN",
             "UK",
             "Syrian \"rebels\"",
-            "Syrian Oppn.",
+            "Syrian Oppn",
             "LEBANON",
             "FRANCE",
             "JORDAN",
@@ -61,7 +61,7 @@
             "The EU",
             "UAE"
         ],
-        "quadvalues": [
+        "values": [
             "0.1609",
             "-0.9211",
             "-0.0738",
@@ -93,8 +93,8 @@
         ]
     },
     {
-        "name": "Syrian Oppn.",
-        "eventcounts": [
+        "name": "Syrian Oppn",
+        "eventCount": [
             4,
             6,
             6,
@@ -102,7 +102,7 @@
             2,
             4
         ],
-        "neighbs": [
+        "imports": [
             "United Nations",
             "TURKEY",
             "RUSSIA",
@@ -110,7 +110,7 @@
             "IRAN",
             "ISIS"
         ],
-        "quadvalues": [
+        "values": [
             "-0.5000",
             "-1.3333",
             "0.3333",
