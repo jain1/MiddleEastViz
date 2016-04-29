@@ -1,6 +1,7 @@
-Visualization for conflicts in the Middle East (Centering around Syria) 
+## Visualization for conflicts in the Middle East (Centering around Syria) 
 
-########################## Project Description ################################
+
+# Project Description
 The aim of the project is to visualization the relationship between countries
 (all caps) and organization (lowercase) involved in primarily in the Syrian conflict.
 We wanted to be able to encode the kind of relationship (positive or negative)
@@ -26,7 +27,7 @@ SOURCEURL for those events in the Headlines section. These headlines are hyperli
 to the actual SOURCEURL, allowing you to access the actual article.
 
 
-############################# Reconstruction ##################################
+# Reconstruction
 
 Instructions to run visualization on local server:
 1) Clone repository or, download repository as zip file and extract contents
