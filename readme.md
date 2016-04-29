@@ -1,7 +1,7 @@
-## Visualization for conflicts in the Middle East (Centering around Syria) 
+# Visualization for conflicts in the Middle East (Centering around Syria) 
 
 
-# Project Description
+## Project Description
 The aim of the project is to visualization the relationship between countries
 (all caps) and organization (lowercase) involved in primarily in the Syrian conflict.
 We wanted to be able to encode the kind of relationship (positive or negative)
@@ -27,8 +27,7 @@ SOURCEURL for those events in the Headlines section. These headlines are hyperli
 to the actual SOURCEURL, allowing you to access the actual article.
 
 
-# Reconstruction
-
+## Reconstruction
 Instructions to run visualization on local server:
 1) Clone repository or, download repository as zip file and extract contents
 2) On command line, navigate to the directory containing index.html
@@ -37,13 +36,21 @@ For eg.
 To run Python server:
 
 In Python 2 execute command:
-	python -m SimpleHTTPServer
+```
+python -m SimpleHTTPServer
+```
+
 In Python 3 execute command:
-	python3 -m http.server
+```
+python3 -m http.server
+```
 
 This gives console output like:
-	Serving HTTP on 0.0.0.0 port 8000 ...
+```
+Serving HTTP on 0.0.0.0 port 8000 ...
+```
 
-Open Browser and go to - 0.0.0.0:8000
+Open Browser and go to: **0.0.0.0:8000**
+
 
 The visualization will automatically be loaded.
