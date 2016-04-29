@@ -213,67 +213,6 @@ function generateTimelineData(dat, key){
             }
         }
     }
-    //if (dat[key] != undefined){
-    //    var events = dat[key];
-    //    for (var i = 0; i < events.length; i++){
-    //        //find protagonist index
-    //        var protagonistIndex;
-    //        for (var j = 0; j < data2.length; j++){
-    //            if (events[i]['Actor1Name'] == data2[j].name){
-    //                protagonistIndex = j;
-    //                break;
-    //            }
-    //        }
-    //        //adding the links
-    //        data3[protagonistIndex].values.push(events[i]['QuadClass']);
-    //        data3[protagonistIndex].imports.push(events[i]['Actor2Name']);
-    //        data3[protagonistIndex].eventCount.push(1);
-    //        data3[protagonistIndex].sourceURL.push(events[i]['SOURCEURL']);
-    //        data3[protagonistIndex].headlines.push(events[i]['title']);
-    //        data3[protagonistIndex].participants.push(data3[protagonistIndex].name + ' and ' + events[i]['Actor2Name']);
-    //    }
-    //    //console.log("data 3 looks like:");
-    //    //console.log(data3);
-    //    colorFlag2 = [],
-    //    participants = [],
-    //    titleList = [],
-    //    urlList = [];
-    //
-    //    //color flag
-    //    for (var i = 0; i < data3.length; i++){
-    //        for (var j = 0; j < data3[i].values.length; j++){
-    //            if (data3[i].values[j] > 0) colorFlag2.push(1);
-    //            else colorFlag2.push(-1);
-    //        }
-    //    }
-    //
-    //    //urlList for all the links
-    //    for (var i = 0; i < data3.length; i++){
-    //        for (var j = 0; j < data3[i].sourceURL.length; j++){
-    //            urlList.push(data3[i].sourceURL[j]);
-    //        }
-    //    }
-    //
-    //    //title list for all the links
-    //    for (var i = 0; i < data3.length; i++){
-    //        for (var j = 0; j < data3[i].headlines.length; j++){
-    //            titleList.push(data3[i].headlines[j]);
-    //        }
-    //    }
-    //
-    //    //list of participants for all the links
-    //    for (var i = 0; i < data3.length; i++){
-    //        for (var j = 0; j < data3[i].participants.length; j++){
-    //            participants.push(data3[i].participants[j]);
-    //        }
-    //    }
-    //}
-    //else {
-    //    colorFlag2 = [],
-    //    participants = [],
-    //    titleList = [],
-    //    urlList = [];
-    //}
     return data3;
 }
 
@@ -366,6 +305,12 @@ function brushed() {
 
     handle.attr("transform", "translate(" + timeScale(value) + ",0)");
     handle.select('text').text(formatDate(value));
+
+    //clear out everything
+    d3.select("#text").select('svg').selectAll('g').remove();
+    urlList = [];
+    titleList = [];
+    participants = [];
 
     generateTimelineGraph(getDateValue(value));
 }
