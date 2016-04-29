@@ -60,7 +60,7 @@ var urlLinks = d3.select('#text').append('svg')
     .attr('width', 800)
 
 //generate chart 1
-d3.json("alldays2.json", function(error, classes) {
+d3.json("alldays.json", function(error, classes) {
     if (error) throw error;
 
     data2 = generateData(classes);
@@ -131,22 +131,19 @@ d3.select(self.frameElement).style("height", diameter + "px");
 function generateTimelineGraph(key) {
     //get rid of all the link on the d3 chart
 
-    d3.json("timeline2.json", function(error, dat) {
+    d3.json("timeline.json", function(error, dat) {
         if (error) throw error;
         svgTimelineChart.selectAll('.link').remove();
-
-        console.log("generating links");
 
         var nodesTimeline = clusterTimeline.nodes(packageHierarchy(generateTimelineData(dat,key)));
         var linksTimeline = packageImports(nodesTimeline);
 
-        console.log(data3);
-
+        linkTimeline = svgTimelineChart.append("g").selectAll(".link");
         linkTimeline = linkTimeline
             .data(bundle(linksTimeline))
             .enter().append("path")
-            .each(function(d) {
-                d.source = d[0], d.target = d[d.length - 1];
+            .each(function(d2) {
+                d2.source = d2[0], d2.target = d2[d2.length - 1];
             })
             .attr("stroke-opacity", ".4")
             .attr("class", "link")

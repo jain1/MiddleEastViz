@@ -1,14 +1,18 @@
 ////***************************************************************************************************************
 ////**************************************  d3 Helper Methods  ****************************************************
 ////***************************************************************************************************************
+/**
+ * On mouse hover method for the nodes of the overview bundling diagram.
+ *
+ * Changes the font size of the node text, and changes the opacity of
+ * all links attached to this node to 1, while reducing the opacity of
+ * all other links to 0.16
+ */
 function mouseovered(){
     d3.select(this)
         .style("font-size", "120%")
 
-    //TODO Change the opacity of the lines as well
-    var entity = d3.select(this).text();
-//  d3.selectAll(".link")
-
+    var entity = d3.select(this).text(); //text of the current node
     var hoverFlag = []
     for (var i = 0; i < data2.length; i++){
         if (data2[i].name === entity){
@@ -35,6 +39,11 @@ function mouseovered(){
         })
 }
 
+/**
+ * On mouse out method for the nodes of the overview bundling diagram.
+ *
+ * Changes the font size of the node text and opacity of all links to default.
+ */
 function mouseouted(){
     d3.select(this)
         .style("font-size", "80%")
@@ -48,11 +57,19 @@ function mouseouted(){
 ////**************************************  Data Helper Methods  **************************************************
 ////***************************************************************************************************************
 
+/**
+ * Generates the data for the overview edge bundling diagram
+ *
+ *
+ *
+ *
+ * @param {JSON} classes: The JSON read by d3 containing processed GDELT data
+ * @param {Array} data2: Array in which to stored further processed data
+ *
+ * @return {Array} data2: Processed data successfully entered into array
+ */
 function generateData(classes, data2){
-    console.log("##########################################################################");
-    console.log("Creating the data");
 
-    //TODO change imports to neighbors in json and code
     data2 = []; //initialize the data2 array
     var names = []; //keeps track of all the organizations added to the array
     for (var i = 0; i < classes.length; i++){
@@ -69,10 +86,6 @@ function generateData(classes, data2){
             names.push(data2[i].name);
         }
     }
-    //console.log("This is how data2 initially looks: ");
-    //for (var i = 0; i < data2.length; i++){
-    //    console.log(data2[i])
-    //}
 
     //add the neighbors that arent there but have relationships through the main entities
     for (var i = 0; i < data2.length; i++){
@@ -91,51 +104,51 @@ function generateData(classes, data2){
                 //remember to add this to the names array
                 names.push(currNeighbors[j])
             }
-            //else {
-            //    console.log(currNeighbors[j] + " already exists!")
-            //}
         }
     }
+
     //switch position of Syrian Oppn for aesthetic appeal
     var temp = data2[1]; // current position
     data2[1] = data2[23];
     data2[23] = temp;
 
-
-    console.log("This is how data2 looks after adding neighbor entities: ");
-    for (var i = 0; i < data2.length; i++){
-        console.log(data2[i])
-    }
-    console.log("##########################################################################");
-    console.log("Color flag info")
+    //generates flags to determine what color the link is
     for (var i = 0; i < data2.length; i++){
         for (var j = 0; j < data2[i].values.length; j++){
             if (data2[i].values[j] > 0) colorFlag.push(1);
             else colorFlag.push(-1);
         }
     }
-    console.log(colorFlag);
-    console.log("##########################################################################");
-    console.log("Stroke flag info")
 
-
+    //generates flags to determine the stroke value of the links
     for (var i = 0; i < data2.length; i++){
         for (var j = 0; j < data2[i].values.length; j++){
-            //console.log(data2[i].eventCount[j]);
-
-            strokeFlag.push(2);
-
-            //if (data2[i].eventCount[j] > 100) strokeFlag.push(6);
-            //else if (data2[i].eventCount[j] > 50) strokeFlag.push(4);
-            //else strokeFlag.push(2);
-
-            //if (data2[i].eventCount[j] < 25) strokeFlag.push(0.5);
-            //else strokeFlag.push(Number(data2[i].eventCount[j]) / 50);
+            if (data2[i].eventCount[j] < 25) strokeFlag.push(2);
+            else strokeFlag.push(Math.min(18, Number(data2[i].eventCount[j]) / 12));
         }
     }
-    console.log(strokeFlag);
-    console.log("##########################################################################");
 
+    //creates an empty data3 array, later to be used by second edge bundling chart
+    return data2;
+}
+
+/**
+ * Generates the data for the timeline edge bundling diagram
+ *
+ * The GDELT data organized in dat is organized as a dictionary, the key is the
+ * SQL date value. The key has already been generated and is used to pull the events
+ * of interest for a particular day.
+ *
+ *
+ *
+ *
+ * @param {JSON} dat: The JSON read by d3 containing processed GDELT data
+ * @param {Array} key: the key to determine what day's data to use
+ *
+ * @return {Array} data3: Processed data successfully entered into array
+ */
+function generateTimelineData(dat, key){
+    //clear out the existing data3 array
     for (var i = 0; i < data2.length; i++){
         data3[i] = new Object();
         data3[i].name = data2[i].name;
@@ -147,10 +160,6 @@ function generateData(classes, data2){
         data3[i].participants = [];
     }
 
-    return data2;
-}
-
-function generateTimelineData(dat, key){
     for (var k = 0; k < data3.length; k++){
         data3[k].imports = [];
         data3[k].eventCount = [];
@@ -162,31 +171,30 @@ function generateTimelineData(dat, key){
 
     if (dat[key] != undefined){
         var events = dat[key];
-        //console.log(events);
+
         for (var i = 0; i < events.length; i++){
-            //find protagonist index
             var protagonistIndex;
             for (var j = 0; j < data2.length; j++){
-                if (events[i]['Actor1Name'] == data2[j].name){
+                if (events[i].name == data2[j].name){
                     protagonistIndex = j;
                     break;
                 }
             }
-            //generate index of the neighbor
-            data3[protagonistIndex].values.push(events[i]['QuadClass']);
-            data3[protagonistIndex].imports.push(events[i]['Actor2Name']);
-            data3[protagonistIndex].eventCount.push(1);
-            data3[protagonistIndex].sourceURL.push(events[i]['SOURCEURL']);
-            data3[protagonistIndex].headlines.push(events[i]['title']);
-            data3[protagonistIndex].participants.push(data3[protagonistIndex].name + ' and ' + events[i]['Actor2Name']);
+            //add the values to the object
+            data3[protagonistIndex].name = events[i]['name'];
+            data3[protagonistIndex].imports = events[i]['imports'];
+            data3[protagonistIndex].values = events[i]['values'];
+            data3[protagonistIndex].eventCount = events[i]['eventCounts'];
+            data3[protagonistIndex].headlines = events[i]['titlelists'];
+            data3[protagonistIndex].sourceURL = events[i]['urllists'];
         }
-        //console.log("data 3 looks like:");
-        //console.log(data3);
+
         colorFlag2 = [],
         participants = [],
         titleList = [],
         urlList = [];
 
+        //color flag
         for (var i = 0; i < data3.length; i++){
             for (var j = 0; j < data3[i].values.length; j++){
                 if (data3[i].values[j] > 0) colorFlag2.push(1);
@@ -194,36 +202,91 @@ function generateTimelineData(dat, key){
             }
         }
 
-        for (var i = 0; i < data3.length; i++){
-            for (var j = 0; j < data3[i].sourceURL.length; j++){
-                urlList.push(data3[i].sourceURL[j]);
-            }
-        }
-
+        //urlList for all the links
         for (var i = 0; i < data3.length; i++){
             for (var j = 0; j < data3[i].headlines.length; j++){
-                titleList.push(data3[i].headlines[j]);
+                for (var k = 0; k < data3[i].headlines[j].length; k++){
+                    urlList.push(data3[i].sourceURL[j][k]);
+                    titleList.push(data3[i].headlines[j][k]);
+                    participants.push(data3[i].name + " and " + data3[i].imports[j])
+                }
             }
         }
-
-        for (var i = 0; i < data3.length; i++){
-            for (var j = 0; j < data3[i].participants.length; j++){
-                participants.push(data3[i].participants[j]);
-            }
-        }
-
-        //console.log(data3);
     }
-    else {
-        colorFlag2 = [],
-        participants = [],
-        titleList = [],
-        urlList = [];
-    }
+    //if (dat[key] != undefined){
+    //    var events = dat[key];
+    //    for (var i = 0; i < events.length; i++){
+    //        //find protagonist index
+    //        var protagonistIndex;
+    //        for (var j = 0; j < data2.length; j++){
+    //            if (events[i]['Actor1Name'] == data2[j].name){
+    //                protagonistIndex = j;
+    //                break;
+    //            }
+    //        }
+    //        //adding the links
+    //        data3[protagonistIndex].values.push(events[i]['QuadClass']);
+    //        data3[protagonistIndex].imports.push(events[i]['Actor2Name']);
+    //        data3[protagonistIndex].eventCount.push(1);
+    //        data3[protagonistIndex].sourceURL.push(events[i]['SOURCEURL']);
+    //        data3[protagonistIndex].headlines.push(events[i]['title']);
+    //        data3[protagonistIndex].participants.push(data3[protagonistIndex].name + ' and ' + events[i]['Actor2Name']);
+    //    }
+    //    //console.log("data 3 looks like:");
+    //    //console.log(data3);
+    //    colorFlag2 = [],
+    //    participants = [],
+    //    titleList = [],
+    //    urlList = [];
+    //
+    //    //color flag
+    //    for (var i = 0; i < data3.length; i++){
+    //        for (var j = 0; j < data3[i].values.length; j++){
+    //            if (data3[i].values[j] > 0) colorFlag2.push(1);
+    //            else colorFlag2.push(-1);
+    //        }
+    //    }
+    //
+    //    //urlList for all the links
+    //    for (var i = 0; i < data3.length; i++){
+    //        for (var j = 0; j < data3[i].sourceURL.length; j++){
+    //            urlList.push(data3[i].sourceURL[j]);
+    //        }
+    //    }
+    //
+    //    //title list for all the links
+    //    for (var i = 0; i < data3.length; i++){
+    //        for (var j = 0; j < data3[i].headlines.length; j++){
+    //            titleList.push(data3[i].headlines[j]);
+    //        }
+    //    }
+    //
+    //    //list of participants for all the links
+    //    for (var i = 0; i < data3.length; i++){
+    //        for (var j = 0; j < data3[i].participants.length; j++){
+    //            participants.push(data3[i].participants[j]);
+    //        }
+    //    }
+    //}
+    //else {
+    //    colorFlag2 = [],
+    //    participants = [],
+    //    titleList = [],
+    //    urlList = [];
+    //}
     return data3;
 }
 
-
+/**
+ * Generates the nodes to be used by the edge bundling diagram.
+ *
+ * Original source: https://bl.ocks.org/mbostock/7607999
+ *
+ *
+ *
+ *
+ * @param {Array} classes: Processed GDELT data needed to generate the nodes
+ */
 // Lazily construct the package hierarchy from class names.
 function packageHierarchy(classes) {
     var map = {};
@@ -248,6 +311,19 @@ function packageHierarchy(classes) {
     return map[""];
 }
 
+/**
+ * Generates the links to be used by the edge bundling diagram.
+ * Uses the output nodes of packageHierarchy. It creates a 'source' and
+ * 'target' attribute for each node
+ *
+ * Original source: https://bl.ocks.org/mbostock/7607999
+ *
+ *
+ *
+ *
+ * @param {Array} nodes: output from the packageHierarchy method
+ * @return {Array} import: links for all the nodes
+ */
 // Return a list of imports for the given array of nodes.
 function packageImports(nodes) {
     var map = {},
@@ -272,7 +348,14 @@ function packageImports(nodes) {
 ////****************************************  Slider Methods  *****************************************************
 ////***************************************************************************************************************
 
-
+/**
+ * On brush function that triggers the formulation of timeline data
+ *
+ * When brushed is triggered, it indicates that the user has changed the position
+ * of the timeline, hereby requesting a new date to view events of. This function
+ * takes generates the date value and uses generateTimelineGraph() to generate the
+ * timeline edge bundling diagram.
+ */
 function brushed() {
     var value = brush.extent()[0];
 
@@ -285,18 +368,17 @@ function brushed() {
     handle.select('text').text(formatDate(value));
 
     generateTimelineGraph(getDateValue(value));
-
-
-    //console.log(getDate(value));
-    //console.log("the value is: " + value.toString());
-
-
-    //if (value !== previousKey){
-    //    previousKey = value;
-    //    generateTimelineGraph(getDateValue(value));
-    //}
 }
 
+/**
+ * Converts the date value into an integer that can be used to generate the SQL date
+ *
+ *
+ *
+ *
+ * @param {date} value: date object for selected date
+ * @return {number}: integer value to be used as the key
+ */
 function getDateValue(value){
     var dateTokens = value.toString().split(' ');
     var month = dateTokens[1],
@@ -344,6 +426,15 @@ function getDateValue(value){
     return getDate(newValue);
 }
 
+/**
+ * Converts the integer date value into the SQL date String that can be used as a key
+ *
+ *
+ *
+ *
+ * @param {number} sliderNumber: integer date value
+ * @return {String}: SQL date String that can be used as a string to access JSON data
+ */
 function getDate (sliderNumber){
     if (sliderNumber > 334) {
         if (sliderNumber - 334 < 10) return '2015120' + (sliderNumber - 334);
